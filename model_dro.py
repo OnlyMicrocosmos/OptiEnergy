@@ -518,16 +518,17 @@ def solve_dro_model(
         solvers_list.append(cp.CPLEX)
 
     # 其次使用开源鲁棒求解器
+    # 1. 优先尝试 Clarabel (最适合云端的开源求解器)
+    if 'CLARABEL' in cp.installed_solvers():
+        solvers_list.append(cp.CLARABEL)
+
+    # 2. 其次是 SCS
     if 'SCS' in cp.installed_solvers():
         solvers_list.append(cp.SCS)
+
+    # 3. 最后尝试 ECOS (容易报错，放最后)
     if 'ECOS' in cp.installed_solvers():
         solvers_list.append(cp.ECOS)
-    if 'OSQP' in cp.installed_solvers():
-        solvers_list.append(cp.OSQP)
-    if 'HIGHS' in cp.installed_solvers():
-        solvers_list.append(cp.HIGHS)
-    if 'GLPK' in cp.installed_solvers():
-        solvers_list.append(cp.GLPK)
 
     # 依次尝试
     for solver in solvers_list:
