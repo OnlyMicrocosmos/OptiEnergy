@@ -14,21 +14,32 @@ import ccg_main
 # ==================== 全局配置与样式美化 ====================
 import os
 import matplotlib.font_manager as fm
+import matplotlib.pyplot as plt
 
-# 1. 自动加载本地字体 (解决云端乱码)
-# 优先寻找项目目录下的 SimHei.ttf
+# 【关键修改 1】：必须先设置绘图风格，否则它会覆盖掉后面的字体设置！
+plt.style.use('seaborn-v0_8-paper')
+
+# 【关键修改 2】：自动加载本地字体并动态获取字体名称
 font_path = 'SimHei.ttf'
+font_name = 'SimHei' # 默认值
+
 if os.path.exists(font_path):
     # 将字体添加到 matplotlib 字体管理器
     fm.fontManager.addfont(font_path)
-    # 设置全局字体为 SimHei
-    plt.rcParams['font.family'] = ['SimHei']
+    # 动态获取注册后的字体内部名称（防止 SimHei.ttf 的内部名称不叫 'SimHei'）
+    font_prop = fm.FontProperties(fname=font_path)
+    font_name = font_prop.get_name()
+    # 设置全局字体
+    plt.rcParams['font.family'] = font_name
 else:
     # 本地调试时的备选
     plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'Arial Unicode MS']
 
+# 解决负号显示为方块的问题
 plt.rcParams['axes.unicode_minus'] = False
-plt.style.use('seaborn-v0_8-paper')
+
+# 打印日志确认字体是否加载（调试用，可在终端查看）
+print(f"当前使用的字体文件: {font_path}, 注册名称: {font_name}")
 
 # 2. 页面基础配置
 st.set_page_config(
